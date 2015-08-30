@@ -3,7 +3,7 @@ package com.wu.cacu;
 import java.util.Stack;
 
 /**
- * 加减乘除混合运算。
+ * 加减乘除混合运算。利用后缀表达式完成计算，同时追加中缀转换为后缀。
  * Created by xbuwc on 2015/8/28.
  */
 public class caculate {
@@ -43,7 +43,9 @@ public class caculate {
 
     public static void main(String [] args){
         System.out.println(Expression);
-        System.out.print(cal(suffixExpression));
+        System.out.println("后缀表达式："+suffixExpression);
+        System.out.print(InfixTosuffix(Expression));
+//        System.out.print(cal(suffixExpression));
     }
 
     /**
@@ -103,6 +105,20 @@ public class caculate {
     public static boolean isPlusAndSubtract(String str){
         return str.equals(plus)||str.equals(subtract);
     }
+
+    /**
+     * 判断运算符的等级，
+     * @param str
+     * @return 如果是加减返回1,乘法或除返回2.否则返回0.返回0表示没有符合的要求。
+     */
+    public static int getLevelFromOpreator(String str){
+        if (isPlusAndSubtract(str)){
+            return 1;
+        }else if (isMulAndDevde(str)){
+            return 2;
+        }
+        return 0;
+    }
     /**
      * 中缀表达式转后缀表达式。
      * @return
@@ -110,22 +126,44 @@ public class caculate {
     public static String InfixTosuffix(String inFixExpression){
         String[] infixArray = inFixExpression.split(" ");
         int length =infixArray.length;
-/**
- * 后缀表达式动态字符串
- */
+        /*
+        * 后缀表达式动态字符串
+         */
         StringBuffer suffixStr =new StringBuffer("");
         String stackpeek =null;
         for (int i = 0; i < length; i++) {
             if (isMulAndDevde(infixArray[i])){
-                ExpressionStack.push(infixArray[i]);
+                ExpressionStack.push(infixArray[i]); //将数据压到数据栈
             }else if(isPlusAndSubtract(infixArray[i])){
                 if (!ExpressionStack.empty()){ //取得栈顶的数据
                     stackpeek=ExpressionStack.peek();
+                    if (getLevelFromOpreator(stackpeek)==2){//表示栈顶的运算符号是+-，优先级为最低
+                        suffixStr.append(ExpressionStack.pop() +" "); //取出栈里的元素、
+                        suffixStr.append(infixArray[i] +" ");//将当前的元素加到表达式中。
+                    }else{
+                        ExpressionStack.push(infixArray[i]);
+                    }
+                }else{
+                    ExpressionStack.push(infixArray[i]);
+                }
+            }else if(infixArray[i].equals("(")){
+                ExpressionStack.push(infixArray[i]); //如果预见的是左括号，就继续进栈。
+            }else if(infixArray[i].equals(")")){
+                while (!ExpressionStack.empty()){
+                    if (ExpressionStack.peek().equals("(")){
+                        ExpressionStack.pop();
+                        break;
+                    }else{
+                        suffixStr.append(ExpressionStack.pop()+" ");
+                    }
                 }
             }else{
-                suffixStr.append(infixArray[i]);
+                suffixStr.append(infixArray[i]+" ");
             }
         }
-        return null;
+        while (!ExpressionStack.empty()){
+                suffixStr.append(ExpressionStack.pop()+" ");
+        }
+        return suffixStr.toString();
     }
 }
