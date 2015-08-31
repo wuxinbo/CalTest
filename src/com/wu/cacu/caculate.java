@@ -10,11 +10,7 @@ public class caculate {
     /**
      * 计算表达式
      */
-    static String  Expression ="9 + ( 3 - 1 ) * 3 + 10 / 2";
-    /**
-     * 后缀表达式
-     */
-    private static String suffixExpression="9 3 1 - 3 * + 10 2 / +";
+    static String  Expression ="9 + ( 3 - 1 ) * 3 + 10 / 2 - 3 * 2";
     /**
      * +
      */
@@ -43,9 +39,8 @@ public class caculate {
 
     public static void main(String [] args){
         System.out.println(Expression);
-        System.out.println("后缀表达式："+suffixExpression);
-        System.out.print(InfixTosuffix(Expression));
-//        System.out.print(cal(suffixExpression));
+        System.out.println(InfixTosuffix(Expression));
+        System.out.print(cal(InfixTosuffix(Expression)));
     }
 
     /**
@@ -132,23 +127,21 @@ public class caculate {
         StringBuffer suffixStr =new StringBuffer("");
         String stackpeek =null;
         for (int i = 0; i < length; i++) {
-            if (isMulAndDevde(infixArray[i])){
+            if (isMulAndDevde(infixArray[i])||infixArray[i].equals("(")){//如果当前符号是*/，执行...
                 ExpressionStack.push(infixArray[i]); //将数据压到数据栈
-            }else if(isPlusAndSubtract(infixArray[i])){
+            }else if(isPlusAndSubtract(infixArray[i])){ //如果当前符号是加号或者减号,执行。。。
                 if (!ExpressionStack.empty()){ //取得栈顶的数据
                     stackpeek=ExpressionStack.peek();
                     if (getLevelFromOpreator(stackpeek)==2){//表示栈顶的运算符号是+-，优先级为最低
                         suffixStr.append(ExpressionStack.pop() +" "); //取出栈里的元素、
-                        suffixStr.append(infixArray[i] +" ");//将当前的元素加到表达式中。
+                        ExpressionStack.push(infixArray[i]);//将当前的元素加到表达式中。
                     }else{
                         ExpressionStack.push(infixArray[i]);
                     }
                 }else{
                     ExpressionStack.push(infixArray[i]);
                 }
-            }else if(infixArray[i].equals("(")){
-                ExpressionStack.push(infixArray[i]); //如果预见的是左括号，就继续进栈。
-            }else if(infixArray[i].equals(")")){
+            }else if(infixArray[i].equals(")")){ //如果当前是），需要将栈里的符号弹出，直到弹出的是（。
                 while (!ExpressionStack.empty()){
                     if (ExpressionStack.peek().equals("(")){
                         ExpressionStack.pop();
@@ -160,10 +153,10 @@ public class caculate {
             }else{
                 suffixStr.append(infixArray[i]+" ");
             }
-        }
+        }//由于最后的数据已经遍历完，最后将栈里面de数据全部取出。
         while (!ExpressionStack.empty()){
                 suffixStr.append(ExpressionStack.pop()+" ");
         }
-        return suffixStr.toString();
+        return suffixStr.toString(); //返回生成好的后缀表达式。
     }
 }
