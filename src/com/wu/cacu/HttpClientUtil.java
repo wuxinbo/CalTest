@@ -45,7 +45,7 @@ public class HttpClientUtil {
 //        System.out.print();
     }
     public static void main(String [] args){
-        httpGet(Url);
-//        httpGet("http://www.weather.com.cn/data/cityinfo/101040100.html"); //天气查询接口
+//        httpGet(Url);
+        httpGet("http://www.weather.com.cn/data/cityinfo/101040100.html"); //天气查询接口
     }
 }
